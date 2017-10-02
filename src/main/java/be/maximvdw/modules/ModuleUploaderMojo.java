@@ -294,6 +294,8 @@ public class ModuleUploaderMojo extends AbstractMojo {
 
             if (changes != null) {
                 connection.data("changes", changes);
+            }else{
+                connection.data("changes","/");
             }
             if (permalink != null) {
                 connection.data("permalink", permalink);
