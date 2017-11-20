@@ -106,57 +106,61 @@ public class ModuleUploaderMojo extends AbstractMojo {
             URLClassLoader cl = new URLClassLoader(runtimeUrls,
                     Thread.currentThread().getContextClassLoader());
             while (e.hasMoreElements()) {
-                JarEntry je = e.nextElement();
-                if (je.isDirectory() || !je.getName().endsWith(".class")) {
-                    continue;
-                }
+                try {
+                    JarEntry je = e.nextElement();
+                    if (je.isDirectory() || !je.getName().endsWith(".class")) {
+                        continue;
+                    }
 
-                String className = je.getName().substring(0, je.getName().length() - 6);
-                className = className.replace('/', '.');
-                Class<?> c = Class.forName(className, true, cl);
+                    String className = je.getName().substring(0, je.getName().length() - 6);
+                    className = className.replace('/', '.');
+                    Class<?> c = Class.forName(className, true, cl);
 
-                if (PlaceholderPack.class.isAssignableFrom(c)) {
-                    Class<? extends PlaceholderPack> componentClass = c.asSubclass(PlaceholderPack.class);
-                    // Load the module constraints
-                    Annotation[] annotations = componentClass.getAnnotations();
-                    for (Annotation annotation : annotations) {
-                        if (annotation instanceof ModuleConstraint) {
-                            ModuleConstraint constraint = (ModuleConstraint) annotation;
-                            constraints.put(constraint.type().name(), constraint.value());
-                        } else if (annotation instanceof ModuleConstraints) {
-                            ModuleConstraint[] subConstraints = ((ModuleConstraints) annotation).value();
-                            for (ModuleConstraint subConstraint : subConstraints) {
-                                constraints.put(subConstraint.type().name(), subConstraint.value());
-                            }
-                        } else if (annotation instanceof ModuleName) {
-                            moduleName = ((ModuleName) annotation).value();
-                        } else if (annotation instanceof ModuleVersion) {
-                            moduleVersion = ((ModuleVersion) annotation).value();
-                        } else if (annotation instanceof ModuleDescription) {
-                            moduleDescription = ((ModuleDescription) annotation).value();
-                        } else if (annotation instanceof ModuleAuthor) {
-                            moduleAuthor = ((ModuleAuthor) annotation).value();
-                        } else if (annotation instanceof ModulePermalink) {
-                            permalink = ((ModulePermalink) annotation).value();
-                        } else if (annotation instanceof ModuleScreenshots) {
-                            screenshots = ((ModuleScreenshots) annotation).value();
-                        } else if (annotation instanceof ModuleVideos) {
-                            videos = ((ModuleVideos) annotation).value();
-                        } else if (annotation instanceof ModuleVersionChange) {
-                            if (((ModuleVersionChange) annotation).version().equalsIgnoreCase(moduleVersion)) {
-                                changes = ((ModuleVersionChange) annotation).value();
-                            }
-                        } else if (annotation instanceof ModuleVersionChanges) {
-                            for (ModuleVersionChange change : ((ModuleVersionChanges) annotation).value()) {
-                                if (change.version().equalsIgnoreCase(moduleVersion)) {
-                                    changes = change.value();
+                    if (PlaceholderPack.class.isAssignableFrom(c)) {
+                        Class<? extends PlaceholderPack> componentClass = c.asSubclass(PlaceholderPack.class);
+                        // Load the module constraints
+                        Annotation[] annotations = componentClass.getAnnotations();
+                        for (Annotation annotation : annotations) {
+                            if (annotation instanceof ModuleConstraint) {
+                                ModuleConstraint constraint = (ModuleConstraint) annotation;
+                                constraints.put(constraint.type().name(), constraint.value());
+                            } else if (annotation instanceof ModuleConstraints) {
+                                ModuleConstraint[] subConstraints = ((ModuleConstraints) annotation).value();
+                                for (ModuleConstraint subConstraint : subConstraints) {
+                                    constraints.put(subConstraint.type().name(), subConstraint.value());
+                                }
+                            } else if (annotation instanceof ModuleName) {
+                                moduleName = ((ModuleName) annotation).value();
+                            } else if (annotation instanceof ModuleVersion) {
+                                moduleVersion = ((ModuleVersion) annotation).value();
+                            } else if (annotation instanceof ModuleDescription) {
+                                moduleDescription = ((ModuleDescription) annotation).value();
+                            } else if (annotation instanceof ModuleAuthor) {
+                                moduleAuthor = ((ModuleAuthor) annotation).value();
+                            } else if (annotation instanceof ModulePermalink) {
+                                permalink = ((ModulePermalink) annotation).value();
+                            } else if (annotation instanceof ModuleScreenshots) {
+                                screenshots = ((ModuleScreenshots) annotation).value();
+                            } else if (annotation instanceof ModuleVideos) {
+                                videos = ((ModuleVideos) annotation).value();
+                            } else if (annotation instanceof ModuleVersionChange) {
+                                if (((ModuleVersionChange) annotation).version().equalsIgnoreCase(moduleVersion)) {
+                                    changes = ((ModuleVersionChange) annotation).value();
+                                }
+                            } else if (annotation instanceof ModuleVersionChanges) {
+                                for (ModuleVersionChange change : ((ModuleVersionChanges) annotation).value()) {
+                                    if (change.version().equalsIgnoreCase(moduleVersion)) {
+                                        changes = change.value();
+                                    }
                                 }
                             }
                         }
+                        if (moduleName != null) {
+                            break;
+                        }
                     }
-                    if (moduleName != null) {
-                        break;
-                    }
+                } catch (Throwable ex) {
+
                 }
             }
         } catch (Throwable ex) {
@@ -294,8 +298,8 @@ public class ModuleUploaderMojo extends AbstractMojo {
 
             if (changes != null) {
                 connection.data("changes", changes);
-            }else{
-                connection.data("changes","/");
+            } else {
+                connection.data("changes", "/");
             }
             if (permalink != null) {
                 connection.data("permalink", permalink);
