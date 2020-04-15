@@ -155,9 +155,9 @@ public class ModuleUploaderMojo extends AbstractMojo {
                                 }
                             }
                         }
-                        if (moduleName != null) {
-                            break;
-                        }
+//                        if (moduleName != null) {
+//                            break;
+//                        }
                     }
                 } catch (Throwable ex) {
 
