@@ -16,12 +16,12 @@
         <repository>
             <id>mvdw-software</id>
             <name>Private Projects</name>
-            <url>http://repo.mvdw-software.be/content/groups/private-group/</url>
+            <url>https://repo.mvdw-software.com/content/groups/private-group/</url>
         </repository>
         <repository>
             <id>public</id>
             <name>Public Repositories</name>
-            <url>http://repo.mvdw-software.be/content/groups/public/</url>
+            <url>https://repo.mvdw-software.com/content/groups/public/</url>
         </repository>
     </repositories>
 
